@@ -28,7 +28,15 @@ ERROR_MESSAGE = (
 
 user_states = {}
 
-@Client.on_message(filters.private & ~filters.forwarded & filters.command("generate"))
+async def generate_session(client, message, telethon=False):
+    user_id = message.from_user.id
+    user_states[user_id] = {
+        "step": "api_id",
+        "telethon": telethon
+    }
+    await message.reply("Please send your `API_ID`")
+
+@Client.on_message(filters.private & filters.command("generate"))
 async def start_generate(client, msg):
     await msg.reply(
         "Please choose which string session you want to generate:",
@@ -49,8 +57,11 @@ async def choose_type(client, cq):
     await cq.message.reply("Please send your `API_ID`")
     await cq.answer()
 
-@Client.on_message(filters.private & ~filters.forwarded & ~filters.command(["generate"]))
+@Client.on_message(filters.private & ~filters.command(["generate"]))
 async def handle_flow(client, msg):
+    if not msg.from_user:
+        return
+
     user_id = msg.from_user.id
     if user_id not in user_states:
         return
