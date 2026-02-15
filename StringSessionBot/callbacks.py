@@ -1,6 +1,6 @@
 from Data import Data
 from pyrogram import Client
-from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import CallbackQuery, InlineKeyboardMarkup, InlineKeyboardButton, LinkPreviewOptions
 from StringSessionBot.generate import generate_session, ERROR_MESSAGE
 
 @Client.on_callback_query()
@@ -19,14 +19,14 @@ async def callbacks(client: Client, cq: CallbackQuery):
         elif query == "about":
             await cq.message.edit_text(
                 Data.ABOUT,
-                disable_web_page_preview=True,
+                link_preview_options=LinkPreviewOptions(is_disabled=True),
                 reply_markup=InlineKeyboardMarkup(Data.home_buttons),
             )
 
         elif query == "help":
             await cq.message.edit_text(
                 "**Here's How to use me**\n" + Data.HELP,
-                disable_web_page_preview=True,
+                link_preview_options=LinkPreviewOptions(is_disabled=True),
                 reply_markup=InlineKeyboardMarkup(Data.home_buttons),
             )
 

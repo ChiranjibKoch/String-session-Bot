@@ -1,11 +1,12 @@
 from Data import Data
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, Message
+from pyrogram.types import InlineKeyboardMarkup, Message, LinkPreviewOptions
 
 @Client.on_message(filters.private & filters.command("about"))
-async def about_cmd(client: Client, message: Message):
-    await message.reply(
+async def about_cmd(bot: Client, msg: Message):
+    await bot.send_message(
+        msg.chat.id,
         Data.ABOUT,
-        disable_web_page_preview=True,
+        link_preview_options=LinkPreviewOptions(is_disabled=True),
         reply_markup=InlineKeyboardMarkup(Data.home_buttons),
     )

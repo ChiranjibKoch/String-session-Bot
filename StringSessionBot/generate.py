@@ -46,31 +46,34 @@ async def start_generate(client, msg):
         ]])
     )
 
-@Client.on_callback_query(filters.regex("^gen_"))
-async def choose_type(client, cq):
-    user_id = cq.from_user.id
-    telethon_mode = cq.data == "gen_telethon"
-    user_states[user_id] = {
-        "step": "api_id",
-        "telethon": telethon_mode
-    }
-    await cq.message.reply("Please send your `API_ID`")
-    await cq.answer()
-
-@Client.on_message(filters.private & ~filters.command(["generate"]))
+@Client.on_message(filters.private)
 async def handle_flow(client, msg):
-    if not msg.from_user:
+    if not msg.from_user or not msg.text:
         return
 
     user_id = msg.from_user.id
-    if user_id not in user_states:
-        return
-
     text = msg.text.strip()
 
-    if text.startswith("/"):
-        await msg.reply("Generation process cancelled.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+    if text.lower() in ["/cancel"]:
+        if user_id in user_states:
+            cleanup(user_id)
+            await msg.reply("Generation cancelled.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+        else:
+            await msg.reply("No active generation process.")
+        return
+
+    if text.lower() in ["/restart", "/generate"]:
         cleanup(user_id)
+        await msg.reply(
+            "Restarting generation. Please choose:",
+            reply_markup=InlineKeyboardMarkup([[
+                InlineKeyboardButton("Pyrogram", callback_data="gen_pyrogram"),
+                InlineKeyboardButton("Telethon", callback_data="gen_telethon")
+            ]])
+        )
+        return
+
+    if user_id not in user_states:
         return
 
     state = user_states[user_id]
@@ -176,5 +179,4 @@ async def finish_session(client, msg, user_id):
     cleanup(user_id)
 
 def cleanup(user_id):
-    if user_id in user_states:
-        user_states.pop(user_id, None)
+    user_states.pop(user_id, None)
