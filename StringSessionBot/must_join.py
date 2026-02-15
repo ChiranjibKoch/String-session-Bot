@@ -1,9 +1,9 @@
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message, LinkPreviewOptions
 from pyrogram.errors import ChatAdminRequired, UserNotParticipant, ChatWriteForbidden
 import config
 
-@Client.on_message(filters.private, group=-1)
+@Client.on_message(filters.private & ~filters.command(["start", "help", "about", "generate", "stats"]), group=-1)
 async def must_join_channel(bot: Client, msg: Message):
     if not config.MUST_JOIN:
         return
@@ -24,7 +24,7 @@ async def must_join_channel(bot: Client, msg: Message):
             try:
                 await msg.reply(
                     f"You must join [this channel]({link}) to use me. After joining try again!",
-                    disable_web_page_preview=True,
+                    link_preview_options=LinkPreviewOptions(is_disabled=True),
                     reply_markup=InlineKeyboardMarkup([
                         [InlineKeyboardButton("✨ Join Channel ✨", url=link)]
                     ])
