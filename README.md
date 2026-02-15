@@ -36,6 +36,8 @@ Telegram bot to generate **Pyrogram** and **Telethon** string sessions.
 
 ## 🚀 Deploy
 
+[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://www.heroku.com/deploy?template=https://github.com/ChiranjibKoch/String-session-Bot)
+
 ### Deploy to Heroku (Eco or higher)
 
 Use your own repo:
