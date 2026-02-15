@@ -1,11 +1,9 @@
 from Data import Data
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup
+from pyrogram.types import InlineKeyboardMarkup, Message
 
-
-# About Message
 @Client.on_message(filters.private & filters.incoming & filters.command("about"))
-async def about(bot, msg):
+async def about_cmd(bot: Client, msg: Message):
     await bot.send_message(
         msg.chat.id,
         Data.ABOUT,

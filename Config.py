@@ -1,27 +1,34 @@
 import os
+from dotenv import load_dotenv
 
-ENVIRONMENT = os.environ.get('ENVIRONMENT', False)
+load_dotenv()
+
+ENVIRONMENT = os.environ.get("ENVIRONMENT", False)
+
+def _get_int(name, default=0):
+    try:
+        return int(os.environ.get(name, default))
+    except ValueError:
+        raise Exception(f"{name} is not a valid integer.")
 
 if ENVIRONMENT:
-    try:
-        API_ID = int(os.environ.get('API_ID', 0))
-    except ValueError:
-        raise Exception("Your API_ID is not a valid integer.")
-    API_HASH = os.environ.get('API_HASH', None)
-    BOT_TOKEN = os.environ.get('BOT_TOKEN', None)
-    DATABASE_URL = os.environ.get('DATABASE_URL', None)
-    DATABASE_URL = DATABASE_URL.replace("postgres", "postgresql")  # Sqlalchemy dropped support for "postgres" name.
-    # https://stackoverflow.com/questions/62688256/sqlalchemy-exc-nosuchmoduleerror-cant-load-plugin-sqlalchemy-dialectspostgre
-    MUST_JOIN = os.environ.get('MUST_JOIN', None)
-    if MUST_JOIN.startswith("@"):
-        MUST_JOIN = MUST_JOIN.replace("@", "")
+    API_ID = _get_int("API_ID", 0)
+    API_HASH = os.environ.get("API_HASH", "")
+    BOT_TOKEN = os.environ.get("BOT_TOKEN", "")
+
+    MONGO_URI = os.environ.get("MONGO_URI", "mongodb://localhost:27017")
+    MONGO_DB = os.environ.get("MONGO_DB", "string_session_bot")
+
+    MUST_JOIN = os.environ.get("MUST_JOIN", "")
 else:
-    # Fill the Values
     API_ID = 0
     API_HASH = ""
     BOT_TOKEN = ""
-    DATABASE_URL = ""
-    DATABASE_URL = DATABASE_URL.replace("postgres", "postgresql")
+
+    MONGO_URI = "mongodb://localhost:27017"
+    MONGO_DB = "string_session_bot"
+
     MUST_JOIN = ""
-    if MUST_JOIN.startswith("@"):
-        MUST_JOIN = MUST_JOIN[1:]
+
+if MUST_JOIN.startswith("@"):
+    MUST_JOIN = MUST_JOIN[1:]

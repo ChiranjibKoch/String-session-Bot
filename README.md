@@ -1,53 +1,52 @@
-# String-session-Bot
-Telegram Bot to generate Pyrogram and Telethon String Session.
+# String-Session-Bot
 
-> A star ⭐ from you means a lot to us!
+Telegram bot to generate **Pyrogram** and **Telethon** string sessions.
 
-[![ForTheBadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)  [![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/Wahyu213)  
+> A star ⭐ from you means a lot!
+
+[![ForTheBadge made-with-python](http://ForTheBadge.com/images/badges/made-with-python.svg)](https://www.python.org/)
+[![ForTheBadge built-with-love](http://ForTheBadge.com/images/badges/built-with-love.svg)](https://github.com/ChiranjibKoch)
 
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat-square)](http://makeapullrequest.com)
-[![Open Source Love svg1](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
+[![Open Source Love](https://badges.frapsoft.com/os/v1/open-source.svg?v=103)](https://github.com/ellerbrock/open-source-badges/)
 
-## Usage
+---
 
-### Deploy to Heroku
+## ✨ Features
 
-[![Deploy](https://www.herokucdn.com/deploy/button.svg)](https://heroku.com/deploy?template=https://github.com/Wahyu213/String-session-Bot)
+- Generate **Pyrogram** string sessions
+- Generate **Telethon** string sessions
+- MongoDB-based user database
+- Admin tools:
+  - `/stats` – total users
+  - `/speedtest` – server speed test (admin only)
+  - `/broadcast` – broadcast message to all users (admin only)
+- Optional force join (`MUST_JOIN`)
+- Fully async, Pyrogram 2.x compatible
+- No SQL, no Pyromod, no legacy dependencies
 
-1. Tap on above button and fill `API_ID`, `API_HASH`, `BOT_TOKEN` (and `MUST_JOIN`).
-2. Then tap "Deploy App" below it. Wait till deploying is complete (will take atmost 2 minutes).
-3. After deploying is complete, tap on "Manage App"
-4. Check the logs to see if your bot is ready!
+---
 
-### Local Deploying
+## 📚 Framework Docs
 
-1. Clone the repo
-   ```markdown
-   git clone https://github.com/Wahyu213/String-Session-Bot
-   ```
-2. Get a DATABASE_URL. If you don't know how, deploy using Heroku Button only or delete database things as it's not a compulsion.
-   
-3. Edit `Config.py` and fill the needed variables
+- Pyrogram: https://docs.kurigram.icu/
+- Telethon: https://docs.telethon.dev/
 
-4. Enter the directory
-   ```markdown
-   cd StringSessionBot
-   ```
-5. Run the file
-   ```markdown
-   python3 generator.py
-   ```
+---
 
-## Environment Variables
+## 🚀 Deploy
 
-#### Mandatory Vars
+### Deploy to Heroku (Eco or higher)
 
-- `API_ID` - Get this from [my.telegram.org](https://my.telegram.org/auth)
-- `API_HASH` - Get this from [my.telegram.org](https://my.telegram.org/auth)
-- `BOT_TOKEN` - Get this from [@BotFather](https://t.me/BotFather)
-- `DATABASE_URL` - Will be automatically added by Heroku.
-- `MUST_JOIN` - Username/ID of your telegram channel/group.
+Use your own repo:
 
-## Support and Update
-- [`Support` ](https://t.me/OkaeriUserbot)
-- [`Update` ](https://t.me/nbzoning)
+https://github.com/ChiranjibKoch/String-session-Bot
+
+Make sure your `app.json` and `Procfile` are present, then deploy normally from GitHub.
+
+### Local Deploy
+
+1. Clone the repo:
+   ```bash
+   git clone https://github.com/ChiranjibKoch/String-session-Bot
+   cd String-session-Bot

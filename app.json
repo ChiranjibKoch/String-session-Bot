@@ -1,55 +1,63 @@
 {
   "name": "String-Session-Bot",
-  "description": "Telegram bot to generate pyrogram string session",
-  "logo": "https://telegra.ph/file/7e23ca7ad0d6acea43fe0.jpg",
+  "description": "Telegram bot to generate Pyrogram/Telethon string sessions",
+  "logo": "https://telegra.ph/file/b9ebde9142a8422920f40.jpg",
   "keywords": [
     "telegram",
     "bot",
     "python",
-    "pyrogram"
+    "pyrogram",
+    "kurigram",
+    "telethon",
+    "mongodb"
   ],
-    "buildpacks": [{
-    "url": "heroku/python"
-  }],
+  "buildpacks": [
+    {
+      "url": "heroku/python"
+    }
+  ],
   "formation": {
     "worker": {
       "quantity": 1,
-      "size": "free"
+      "size": "eco"
     }
   },
-  "addons": [
-      {
-         "options": {
-            "version": "12"
-         },
-         "plan": "heroku-postgresql"
-      }
-   ],
-  "repository": "https://github.com/Wahyu213/String-Session-Bot",
+  "addons": [],
+  "repository": "https://github.com/ChiranjibKoch/String-session-Bot",
   "env": {
     "ENVIRONMENT": {
-      "description": "Don't change ANYTHING.",
+      "description": "Set to any non-empty value in production.",
       "required": true,
-      "value": "ANYTHING"
+      "value": "1"
     },
     "API_ID": {
-      "description": "Get this value from my.telegram.org.",
+      "description": "Get this value from https://my.telegram.org/apps",
       "required": true,
       "value": ""
     },
     "API_HASH": {
-      "description": "Get this value from my.telegram.org.",
+      "description": "Get this value from https://my.telegram.org/apps",
       "required": true,
       "value": ""
     },
     "BOT_TOKEN": {
-      "description": "Obtain a Telegram bot token by contacting @BotFather",
+      "description": "Obtain a Telegram bot token from @BotFather",
       "required": true,
       "value": ""
     },
-    "MUST_JOIN": {
-      "description": "Add username/id of a channel/group",
+    "MONGO_URI": {
+      "description": "MongoDB connection URI (Atlas or self-hosted)",
       "required": true,
+      "value": ""
+    },
+    "MONGO_DB": {
+      "description": "MongoDB database name",
+      "required": false,
+      "value": "string_session_bot"
+    },
+    "MUST_JOIN": {
+      "description": "Username or ID of a channel/group users must join (optional)",
+      "required": false,
       "value": ""
     }
   }
