@@ -12,3 +12,6 @@ async def add_user(user_id: int):
 
 async def num_users() -> int:
     return await users.count_documents({})
+
+async def get_all_users():
+    return await users.find({}).to_list(length=None)
