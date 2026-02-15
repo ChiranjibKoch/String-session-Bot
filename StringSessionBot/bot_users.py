@@ -2,12 +2,14 @@ from pyrogram import Client, filters
 from pyrogram.types import Message
 from StringSessionBot.database.users_mongo import add_user, num_users
 
-@Client.on_message(~filters.service, group=1)
-async def track_users(_, msg: Message):
-    if msg.from_user:
-        await add_user(msg.from_user.id)
+ADMIN_ID = 5218610039
 
-@Client.on_message(filters.user(5218610039) & filters.command("stats"))
-async def stats_cmd(_, msg: Message):
+@Client.on_message(filters.private, group=1)
+async def track_users(client: Client, message: Message):
+    if message.from_user:
+        await add_user(message.from_user.id)
+
+@Client.on_message(filters.user(ADMIN_ID) & filters.command("stats"))
+async def stats_cmd(client: Client, message: Message):
     users = await num_users()
-    await msg.reply(f"Total Users : {users}", quote=True)
+    await message.reply(f"Total Users : {users}")
