@@ -48,7 +48,7 @@ async def start_generate(client: Client, msg: Message):
     )
 
 
-@Client.on_message(filters.private)
+@Client.on_message(filters.private & ~filters.command(["start", "help", "about", "generate"]))
 async def handle_flow(client: Client, msg: Message):
     if not msg.from_user or not msg.text:
         return

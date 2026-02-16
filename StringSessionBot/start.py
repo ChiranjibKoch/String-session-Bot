@@ -15,7 +15,6 @@ async def start(bot: Client, msg: Message):
         await add_user(msg.from_user.id)
     except Exception:
         log.exception("Failed to add user to database")
-        await msg.reply("⚠️ Database is temporarily unavailable. You can still use the bot, but stats may be inaccurate.")
 
     try:
         me = await bot.get_me()
@@ -24,8 +23,7 @@ async def start(bot: Client, msg: Message):
         log.exception("Failed to fetch bot info")
         mention = "this bot"
 
-    await bot.send_message(
-        msg.chat.id,
+    await msg.reply(
         Data.START.format(msg.from_user.mention, mention),
         reply_markup=InlineKeyboardMarkup(Data.buttons),
     )
