@@ -28,12 +28,14 @@ ERROR_MESSAGE = (
 
 user_states = {}
 
+
 async def generate_session(client: Client, chat_id: int, user_id: int, telethon: bool = False):
     user_states[user_id] = {
         "step": "api_id",
         "telethon": telethon
     }
     await client.send_message(chat_id, "Please send your `API_ID`")
+
 
 @Client.on_message(filters.private & filters.command("generate"))
 async def start_generate(client: Client, msg: Message):
@@ -44,6 +46,7 @@ async def start_generate(client: Client, msg: Message):
             InlineKeyboardButton("Telethon", callback_data="gen_telethon")
         ]])
     )
+
 
 @Client.on_message(filters.private)
 async def handle_flow(client: Client, msg: Message):
@@ -65,14 +68,20 @@ async def handle_flow(client: Client, msg: Message):
 
     try:
         if state["step"] == "api_id":
-            state["api_id"] = int(text)
+            try:
+                state["api_id"] = int(text)
+            except ValueError:
+                await msg.reply("API_ID must be an integer.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+                cleanup(user_id)
+                return
+
             state["step"] = "api_hash"
             await msg.reply("Please send your `API_HASH`")
 
         elif state["step"] == "api_hash":
             state["api_hash"] = text
             state["step"] = "phone"
-            await msg.reply("Now send your `PHONE_NUMBER` with country code.")
+            await msg.reply("Now send your `PHONE_NUMBER` with country code.\nExample: `+628xxxxxxx`")
 
         elif state["step"] == "phone":
             state["phone"] = text
@@ -97,46 +106,79 @@ async def handle_flow(client: Client, msg: Message):
                 state["code_hash"] = sent.phone_code_hash
 
             state["step"] = "otp"
-            await msg.reply("Send the OTP like: `1 2 3 4 5`")
+            await msg.reply("Send the OTP like this: `1 2 3 4 5`")
 
         elif state["step"] == "otp":
             phone_code = text.replace(" ", "")
+
             try:
                 if state["telethon"]:
                     await state["client"].sign_in(state["phone"], phone_code)
                 else:
                     await state["client"].sign_in(state["phone"], state["code_hash"], phone_code)
-            except (SessionPasswordNeeded, SessionPasswordNeededError):
-                state["step"] = "password"
-                await msg.reply("Send your 2FA password.")
+
+            except (PhoneCodeInvalid, PhoneCodeInvalidError):
+                await msg.reply("OTP is invalid.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+                cleanup(user_id)
                 return
 
-            await finish_session(client, msg, user_id)
+            except (PhoneCodeExpired, PhoneCodeExpiredError):
+                await msg.reply("OTP is expired.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+                cleanup(user_id)
+                return
+
+            except (SessionPasswordNeeded, SessionPasswordNeededError):
+                state["step"] = "password"
+                await msg.reply("Two-step verification enabled. Send your password.")
+                return
+
+            await finish_session(msg, user_id)
 
         elif state["step"] == "password":
-            if state["telethon"]:
-                await state["client"].sign_in(password=text)
-            else:
-                await state["client"].check_password(password=text)
+            try:
+                if state["telethon"]:
+                    await state["client"].sign_in(password=text)
+                else:
+                    await state["client"].check_password(password=text)
 
-            await finish_session(client, msg, user_id)
+            except (PasswordHashInvalid, PasswordHashInvalidError):
+                await msg.reply("Invalid password.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+                cleanup(user_id)
+                return
+
+            await finish_session(msg, user_id)
+
+    except (ApiIdInvalid, ApiIdInvalidError):
+        await msg.reply("API_ID and API_HASH combination is invalid.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+        cleanup(user_id)
+
+    except (PhoneNumberInvalid, PhoneNumberInvalidError):
+        await msg.reply("PHONE_NUMBER is invalid.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
+        cleanup(user_id)
 
     except Exception as e:
         await msg.reply(ERROR_MESSAGE.format(e))
         cleanup(user_id)
 
-async def finish_session(client: Client, msg: Message, user_id: int):
+
+async def finish_session(msg: Message, user_id: int):
     state = user_states[user_id]
+
     if state["telethon"]:
         string_session = state["client"].session.save()
     else:
         string_session = await state["client"].export_session_string()
 
-    text = f"**STRING SESSION**\n\n`{string_session}`"
-    await client.send_message("me", text)
+    text = (
+        "**STRING SESSION**\n\n"
+        f"`{string_session}`\n\n"
+        "Generated by @ArchAssociation"
+    )
+
+    await msg.reply(text)
     await state["client"].disconnect()
-    await msg.reply("Session generated. Check Saved Messages.")
     cleanup(user_id)
+
 
 def cleanup(user_id: int):
     user_states.pop(user_id, None)
