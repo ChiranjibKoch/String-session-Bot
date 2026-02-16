@@ -3,7 +3,7 @@ import asyncio
 import speedtest
 from pyrogram import Client, filters
 from pyrogram.types import Message
-from StringSessionBot.database.users_mongo import num_users, get_all_users
+from StringSessionBot.database.users_mongo import num_users
 
 log = logging.getLogger("admin")
 

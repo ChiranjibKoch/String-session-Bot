@@ -1,5 +1,11 @@
 from StringSessionBot.database import get_db
+from . import get_db
 
+async def get_all_users():
+    db = get_db()
+    cursor = db.users.find({}, {"_id": 1})
+    return [doc["_id"] async for doc in cursor]
+    
 async def add_user(user_id: int):
     db = get_db()
     if not db:
