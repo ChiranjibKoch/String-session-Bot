@@ -1,6 +1,6 @@
 from Data import Data
 from pyrogram import Client, filters
-from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton
+from pyrogram.types import InlineKeyboardMarkup, InlineKeyboardButton, Message
 from pyrogram.errors import (
     ApiIdInvalid,
     PhoneNumberInvalid,
@@ -28,16 +28,15 @@ ERROR_MESSAGE = (
 
 user_states = {}
 
-async def generate_session(client, message, telethon=False):
-    user_id = message.from_user.id
+async def generate_session(client: Client, chat_id: int, user_id: int, telethon: bool = False):
     user_states[user_id] = {
         "step": "api_id",
         "telethon": telethon
     }
-    await message.reply("Please send your `API_ID`")
+    await client.send_message(chat_id, "Please send your `API_ID`")
 
 @Client.on_message(filters.private & filters.command("generate"))
-async def start_generate(client, msg):
+async def start_generate(client: Client, msg: Message):
     await msg.reply(
         "Please choose which string session you want to generate:",
         reply_markup=InlineKeyboardMarkup([[
@@ -47,14 +46,14 @@ async def start_generate(client, msg):
     )
 
 @Client.on_message(filters.private)
-async def handle_flow(client, msg):
+async def handle_flow(client: Client, msg: Message):
     if not msg.from_user or not msg.text:
         return
 
     user_id = msg.from_user.id
     text = msg.text.strip()
 
-    if text.lower() in ["/cancel"]:
+    if text.lower() == "/cancel":
         if user_id in user_states:
             cleanup(user_id)
             await msg.reply("Generation cancelled.", reply_markup=InlineKeyboardMarkup(Data.generate_button))
@@ -161,7 +160,7 @@ async def handle_flow(client, msg):
         await msg.reply(ERROR_MESSAGE.format(e))
         cleanup(user_id)
 
-async def finish_session(client, msg, user_id):
+async def finish_session(client: Client, msg: Message, user_id: int):
     state = user_states[user_id]
     if state["telethon"]:
         string_session = state["client"].session.save()
@@ -178,5 +177,5 @@ async def finish_session(client, msg, user_id):
     await msg.reply("Session generated successfully. Check your Saved Messages.")
     cleanup(user_id)
 
-def cleanup(user_id):
+def cleanup(user_id: int):
     user_states.pop(user_id, None)

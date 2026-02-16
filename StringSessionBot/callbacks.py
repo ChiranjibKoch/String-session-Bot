@@ -41,11 +41,21 @@ async def callbacks(client: Client, cq: CallbackQuery):
 
         elif query == "gen_pyrogram":
             await cq.answer()
-            await generate_session(client, cq.message, telethon=False)
+            await generate_session(
+                client,
+                chat_id=cq.message.chat.id,
+                user_id=cq.from_user.id,
+                telethon=False
+            )
 
         elif query == "gen_telethon":
             await cq.answer()
-            await generate_session(client, cq.message, telethon=True)
+            await generate_session(
+                client,
+                chat_id=cq.message.chat.id,
+                user_id=cq.from_user.id,
+                telethon=True
+            )
 
         else:
             await cq.answer("Unknown action", show_alert=False)
