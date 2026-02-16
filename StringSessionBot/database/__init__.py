@@ -1,8 +1,25 @@
+import logging
 from motor.motor_asyncio import AsyncIOMotorClient
-from config import MONGO_URI, MONGO_DB
+import config
 
-_client = AsyncIOMotorClient(MONGO_URI)
-_db = _client[MONGO_DB]
+log = logging.getLogger("database")
+
+_client = None
+_db = None
 
 def get_db():
-    return _db
+    global _client, _db
+
+    if _db is not None:
+        return _db
+
+    try:
+        _client = AsyncIOMotorClient(
+            config.MONGO_URI,
+            serverSelectionTimeoutMS=5000
+        )
+        _db = _client[config.MONGO_DB]
+        return _db
+    except Exception:
+        log.exception("Failed to connect to MongoDB")
+        return None
